@@ -12,10 +12,12 @@
 #include <time.h>
 
 char *password;
-char chars[52] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-char ext_chars[77] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-=+()*&^%$#@!~<>?,.:/[]{}";
+char chars[62] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+char ext_chars[87] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=+()*&^%$#@!~<>?,.:/[]{}";
+char numbs[10] = "0123456789";
 
 int ext = 0;
+int force_numb = 0;
 
 int main(int argc, char *argv[]) {
 	if(argc <= 2) {
@@ -40,7 +42,7 @@ int main(int argc, char *argv[]) {
 		    close(f);
 		    return 0;
 		}
-		fprintf(stderr, "Not enough arguments\nUsage: passgen <length> <account> [-s]\n");
+		fprintf(stderr, "Not enough arguments\nUsage: passgen <length> <account> [-s/-n]\n");
 		return 0;
 	}
 	int passSize = 8;
@@ -49,6 +51,8 @@ int main(int argc, char *argv[]) {
 		if(argv[i][0] == '-') {
 			if(argv[i][1] == 's') {
 				ext = 1;
+			} else if(argv[i][1] == 'n') {
+				force_numb = 1;
 			}
 		}
 	}
@@ -57,6 +61,10 @@ int main(int argc, char *argv[]) {
 	time_t t;
 	srand((unsigned) time(&t));
 	if(ext) {
+		if(force_numb) {
+			password[j] = numbs[rand() % strlen(numbs)];
+			j++;
+		}
 		while(j <= size) {
 			char c = ext_chars[rand() % strlen(ext_chars)];
 			if(j == passSize) {
